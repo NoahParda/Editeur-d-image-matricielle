@@ -203,7 +203,6 @@ class Paint(object):
             img.save("C:\\Users\\Noah\\Pictures\paint\\" + filepng, 'png')
             img.close()
 
-            time.sleep(1)  # Attendre 1 seconde
             os.remove(fileps)
 
             self.save_button["state"] = "normal"
