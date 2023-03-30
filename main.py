@@ -229,6 +229,6 @@ class Paint(object):
         self.c.create_image(0, 0, anchor="nw", image=self.img_tk)
         self.setup()
         self.root.mainloop()
-
+        
 if __name__ == '__main__':
     Paint()
