@@ -235,18 +235,17 @@ class Paint(object):
     def save_file(self):
         #Permets l'enregistrement des fichées
         self.popup = FilenamePopup(self.root)
-        self.save_button["state"] = "disabled"
         self.root.wait_window(self.popup.top)
 
         filepng = self.popup.filename + '.png'
 
-        if not os.path.exists("C:\\Users\\Noah\\Pictures\paint\\" + filepng) or \
+        if not os.path.exists("C:\\Users\\Noah Fallot-Verdon\\Pictures\paint\\" + filepng) or \
                 messagebox.askyesno("Fichier déjà existant", "Écraser ?"):
-            fileps = "C:\\Users\\Noah\\Pictures\\paint\\" + self.popup.filename + '.eps'
+            fileps = "C:\\Users\\Noah Fallot-Verdon\\Pictures\\paint\\" + self.popup.filename + '.eps'
 
             self.c.postscript(file=fileps)
             img = Image.open(fileps)
-            img.save("C:\\Users\\Noah\\Pictures\paint\\" + filepng, 'png')
+            img.save("C:\\Users\\Noah Fallot-Verdon\\Pictures\paint\\" + filepng, 'png')
             img.close()
 
             os.remove(fileps)
