@@ -241,7 +241,7 @@ class Paint(object):
         filepng = self.popup.filename + '.png'
 
         if not os.path.exists("C:\\Users\\Noah\\Pictures\paint\\" + filepng) or \
-                messagebox.askyesno("File already exists", "Overwrite?"):
+                messagebox.askyesno("Fichier déjà existant", "Écraser ?"):
             fileps = "C:\\Users\\Noah\\Pictures\\paint\\" + self.popup.filename + '.eps'
 
             self.c.postscript(file=fileps)
