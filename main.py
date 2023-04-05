@@ -57,7 +57,7 @@ class Paint(object):
 
         self.DisplayImg = None
         self.root = Tk()
-        self.root.title("Paint du bled")
+        self.root.title("Éditeur d'image matricielle")
 
         self.pen_button = Button(self.root, text='Stylo', command=self.use_pen)
         self.pen_button.grid(row=0, column=0, sticky="ew")
