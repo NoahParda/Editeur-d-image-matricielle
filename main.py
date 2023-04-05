@@ -5,8 +5,22 @@ from PIL import Image, ImageTk
 import os
 import time
 
+"""////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Pour faire fonctionner le code il faut impérativement télécharger : 
+- Pillow (package pip) 
+- GhostScript et l'ajouté au variable 'Path' de windows 
+
+Ce code est une tentative de répliquer le logiciel 'Paint'.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"""
+
+
+
 
 class FilenamePopup:
+
+    #Création d' une fenêtre popup à partir d'une fenêtre parent 'master' (ici de l'élément Paint).
+    #La fenêtre popup contient un label pour demander à l'utilisateur de choisir un nom de fichier,
+    #une zone de texte pour saisir le nom de fichier et un bouton "Ok" pour valider le choix et fermer la fenêtre popup.
     def __init__(self, master):
         top = self.top = Toplevel(master)
         self.lbl = Label(top, text="Choisissez le nom de fichier : ")
@@ -22,11 +36,25 @@ class FilenamePopup:
 
 
 class Paint(object):
+
+    """
+    L'application dispose d'outils tels que le stylo, le pinceau, la gomme,la ligne et le polygone pour dessiner sur une toile.
+    L'utilisateur peut également choisir la couleur et la taille de la brosse.
+    L'interface utilisateur contient des boutons pour chaque outil,
+    ainsi qu'un écran pour afficher les informations sur l'outil sélectionné et la couleur actuelle.
+
+    """
+
+    #Déclaration des valeurs de bases
     DEFAULT_PEN_SIZE = 5.0
     DEFAULT_COLOR = 'black'
     color = DEFAULT_COLOR
 
+
     def __init__(self):
+
+        #Déclaration des boutons et des valeurs de bases du canva et de la fenêtre.
+
         self.DisplayImg = None
         self.root = Tk()
         self.root.title("Paint du bled")
@@ -92,6 +120,7 @@ class Paint(object):
         self.root.mainloop()
 
     def setup(self):
+        #Déclaration des valeurs des variables de bases et assignation des touches
         self.old_x, self.old_y = None, None
         self.color = self.DEFAULT_COLOR
         self.eraser_on = False
@@ -107,20 +136,25 @@ class Paint(object):
         self.line_start = (None, None)
 
     def use_pen(self):
+        #active le bouton stylo et définie le multiplicateur de pixel à 1 (c'est un stylo, donc il est petit)
         self.activate_button(self.pen_button)
         self.size_multiplier = 1
 
     def use_brush(self):
+        #active le bouton pinceau et définie le multiplicateur de pixel à 2.5 (c'est un pinceau, donc il est plus gros)
         self.activate_button(self.brush_button)
         self.size_multiplier = 2.5
 
     def use_line(self):
+        #active le buton Ligne de l'interface
         self.activate_button(self.line_button)
 
     def use_poly(self):
+        #active le bouton polygone de l'interface
         self.activate_button(self.poly_button)
 
     def choose_color(self):
+        #Choisie la couleur de l'écriture et l'affiche sur l'interface
         self.eraser_on = False
         color = askcolor(color=self.color)[1]
         if color is not None:
@@ -128,9 +162,12 @@ class Paint(object):
             self.black_button.configure(bg=color, activebackground=color)
 
     def use_eraser(self):
+        #active le boutun Effaceur de l'interface
         self.activate_button(self.eraser_button, eraser_mode=True)
 
     def activate_button(self, some_button, eraser_mode=False):
+        #La méthode activate_button est utilisée pour définir l'état des différents boutons.
+        #Elle est appelée lorsqu'un bouton est cliqué et met à jour l'état des boutons pour refléter l'outil actuellement sélectionné.
         self.set_status()
         if self.active_button:
             self.active_button.config(relief='raised')
@@ -139,6 +176,8 @@ class Paint(object):
         self.eraser_on = eraser_mode
 
     def paint(self, event):
+        #La méthode paint est la méthode qui prend en paramètre ce qui se passe sur le canva et permet le "dessin" dessus.
+        #Elle prend en compte les multiplicateurs pour modifier à l'affichage selon le bouton cocher.
         self.set_status(event.x, event.y)
         line_width = self.size_scale.get() * self.size_multiplier
         paint_color = 'white' if self.eraser_on else self.color
@@ -150,6 +189,7 @@ class Paint(object):
         self.old_y = event.y
 
     def line(self, x, y):
+        #La méthode permet la création de ligne à partir du dernier endroit cliquer jusqu'au prochain clic.
         line_width = self.size_scale.get() * self.size_multiplier
         paint_color = 'white' if self.eraser_on else self.color
         self.c.create_line(self.line_start[0], self.line_start[1], x, y,
@@ -157,6 +197,7 @@ class Paint(object):
                            capstyle='round', smooth=True, splinesteps=36)
 
     def point(self, event):
+        #La méthode permet de récupérer les valeurs du clic sur le canva, l'endroit où l'utilisateur à cliquer
         self.set_status(event.x, event.y)
         btn = self.active_button["text"]
         if btn in ("Ligne", "Polygone"):
@@ -169,15 +210,19 @@ class Paint(object):
                 self.line_start = (event.x, event.y)
 
     def reset(self, event):
+        #Stop l'enregistrement des mouvements après que l'utilisateur est lâché le bouton
         self.old_x, self.old_y = None, None
 
     def line_reset(self, event):
+        #Mets en pause l'enregistrement des lignes après que la dernière ligne est étée posée
         self.line_start = (None, None)
 
     def color_default(self):
+        #Méthode qui récupère la couleur par défault
         self.color = self.DEFAULT_COLOR
 
     def set_status(self, x=None, y=None):
+        #Méthode permettant l'affichage des événements en bas à droite de la fenêtre
         if self.active_button:
             btn = self.active_button["text"]
             oldxy = (self.line_start if btn in ("Ligne", "Polygone")
@@ -188,6 +233,7 @@ class Paint(object):
                                  if x is not None and y is not None else ""))
 
     def save_file(self):
+        #Permets l'enregistrement des fichées
         self.popup = FilenamePopup(self.root)
         self.save_button["state"] = "disabled"
         self.root.wait_window(self.popup.top)
@@ -213,6 +259,7 @@ class Paint(object):
         self.save_button["state"] = "normal"
 
     def open_file(self):
+        #Permets l'ouverture et l'affichage d'un fichier présent sur l'ordinateur
         filename = filedialog.askopenfilename(initialdir="C:\\Users\\Noah\\Pictures\\paint",
                                               title="Choisissez un fichier",
                                               filetypes=(("",
